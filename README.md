@@ -19,6 +19,7 @@ Before starting the archiving process, ensure you have the following:
 1. **AWS Access**:
    - Access to the `RAM-AWS-StratifydTasteAnalytics-Admin` role for managing S3 bucket data.
    - Access to the `RAM-AWS-StratifydPostgres-Admin` role for handling PostgreSQL data.
+   - AWS CLI configured locally to interact with AWS services from the command line.
 
 2. **Database Access**:
    - Obtain `mongo_uri` and `postgre_uri` for connecting to MongoDB and PostgreSQL databases, respectively.
@@ -57,7 +58,7 @@ Ensure these prerequisites are in place for a smooth execution of the archiving 
    - **Days after Object Creation**: Enter `0`.
    - Acknowledge the one-time lifecycle request cost and create the rule.
 
-6.**Verify**:
+6. **Verify**:
    - You should a lifecyle rule looking like this:
      ![image](https://github.com/aliibtehajasifniazi/test/assets/171139951/83ec623e-6793-4bc1-ae4d-5ea243a7f34e)
 
@@ -72,44 +73,44 @@ Ensure these prerequisites are in place for a smooth execution of the archiving 
 This is a complete layout of all the Mongo Clusters, their corresponding Postgres Clusters, the stack they are being used in, the clients that have their data in theses clusters and the client's respective sub domain IDs. Last updated `30-06-2024`.
 
 
-| Mongo              | Postgres  | Stack       | Client               | Subdomain ID            |
-|--------------------|-----------|-------------|----------------------|-------------------------|
-| carpo-raspberry    | Herse     | raspberry   | emerson              | 5c5a511e78dba4123c8e131c |
-|                    |           | get (vanilla)| prudential          | 5bad2ed7f55cabb466547a38 |
-|                    |           |             | kcc                  | 5b8e97d6e5bb198aff7a5eba |
-|                    |           |             | Thomson Reuters      | 6011be6fa148e48da399b6c9 |
-|                    |           |             | lilly                | 5b685c204b81391ec3f94cca |
-|                    |           |             | internal: get        | 5a823c4eb43983965dd1e156 |
-|                    |           |             | internal: demo       | 60b690441e491cbf65df8f02 |
-|                    |           |             | internal: uncc       | 60ec80a63787957109e51d9c |
-|                    |           |             | lilly-testsub        | 5ff4966499f2b3151eb63538 |
-|                    |           |             | stfysso              | 65a06445baac9e76dcb88867 |
-|                    |           |             | deltek               | 65c10e18b8507e077ac9321e |
-|                    |           |             | prc                  | 65c545c309c06cdf97cac147 |
-|                    |           |             |                      |                         |
-| himalia            | arche-db  | uat         | uat                  | 5dd46437b93aa380cd490e4d |
-|                    |           | dev         | dev                  | 5dc2f5d1f8ab61e3cdbc5c3b |
-|                    |           |             | lilly, lilly.beta    | 5b685c204b81391ec3f94cca |
+| Mongo              | Postgres  | Stack       | Client                   | Subdomain ID             |
+|--------------------|-----------|-------------|--------------------------|--------------------------|
+| carpo-raspberry    | Herse     | raspberry   | emerson                  | 5c5a511e78dba4123c8e131c |
+|                    |           | get (vanilla)| prudential              | 5bad2ed7f55cabb466547a38 |
+|                    |           |             | kcc                      | 5b8e97d6e5bb198aff7a5eba |
+|                    |           |             | Thomson Reuters          | 6011be6fa148e48da399b6c9 |
+|                    |           |             | lilly                    | 5b685c204b81391ec3f94cca |
+|                    |           |             | internal: get            | 5a823c4eb43983965dd1e156 |
+|                    |           |             | internal: demo           | 60b690441e491cbf65df8f02 |
+|                    |           |             | internal: uncc           | 60ec80a63787957109e51d9c |
+|                    |           |             | lilly-testsub            | 5ff4966499f2b3151eb63538 |
+|                    |           |             | stfysso                  | 65a06445baac9e76dcb88867 |
+|                    |           |             | deltek                   | 65c10e18b8507e077ac9321e |
+|                    |           |             | prc                      | 65c545c309c06cdf97cac147 |
+|                    |           |             |                          |                          |
+| himalia            | arche-db  | uat         | uat                      | 5dd46437b93aa380cd490e4d |
+|                    |           | dev         | dev                      | 5dc2f5d1f8ab61e3cdbc5c3b |
+|                    |           |             | lilly, lilly.beta        | 5b685c204b81391ec3f94cca |
 |                    |           |             | qualityassurance, rabbit | 5c4a39749a796580dbbcf89f |
-|                    |           |             | ally-testsub, testsub | 60300e095c0dcbafe5b3f42c |
-|                    |           |             | ptest                | 653adb73bb3f015b44ac8997 |
-|                    |           |             |                      |                         |
-| sponde-strawberry  | sponde-db | strawberry  | priorityhealth       | 6063549710bd95a8cd1672c9 |
-|                    |           |             | gilead               | 6233999ed8b5a7fc974790cc |
-|                    |           |             | aetna                | 62619df6c660530674893e73 |
-|                    |           |             | mach9                | 61a518a1d0bbd3177e41597a |
-|                    |           |             | virtrutrax, virtutrax| 62016114f0177c58b40e890e |
-|                    |           |             | dsi                  | 6227bc832b3bde9371ffbec6 |
-|                    |           |             | otsuka               | 62b5f34515b866d578916d6d |
-|                    |           |             | heapanalytics        | 5df9308525d84d1a5657db5c |
-|                    |           |             | pmi-testsub, testsub | 5f08b5cbf6ddf0933e8fc4fb |
-|                    |           |             |                      |                         |
-| ersa-chocolate     | ersa-db   | chocolate   | schwab               | 5be0840de62ffd04f24ecd35 |
-|                    |           |             | schwab-testsub       | 6033edd2bf756403406a5032 |
-|                    |           |             | intuit               | 5b6c60d4e0fa4705fe069ea0 |
-|                    |           |             | viivhealthcare, gsk  | 5be07dcd648de4a5cd2cefd8 |
-|                    |           |             | cardinalhealth       | 5d03f3b43f113182b98863d1 |
-|                    |           |             | heapanalytics        | 5df9308525d84d1a5657db5c |
+|                    |           |             | ally-testsub, testsub    | 60300e095c0dcbafe5b3f42c |
+|                    |           |             | ptest                    | 653adb73bb3f015b44ac8997 |
+|                    |           |             |                          |                         |
+| sponde-strawberry  | sponde-db | strawberry  | priorityhealth           | 6063549710bd95a8cd1672c9 |
+|                    |           |             | gilead                   | 6233999ed8b5a7fc974790cc |
+|                    |           |             | aetna                    | 62619df6c660530674893e73 |
+|                    |           |             | mach9                    | 61a518a1d0bbd3177e41597a |
+|                    |           |             | virtrutrax, virtutrax    | 62016114f0177c58b40e890e |
+|                    |           |             | dsi                      | 6227bc832b3bde9371ffbec6 |
+|                    |           |             | otsuka                   | 62b5f34515b866d578916d6d |
+|                    |           |             | heapanalytics            | 5df9308525d84d1a5657db5c |
+|                    |           |             | pmi-testsub, testsub     | 5f08b5cbf6ddf0933e8fc4fb |
+|                    |           |             |                          |                          |
+| ersa-chocolate     | ersa-db   | chocolate   | schwab                   | 5be0840de62ffd04f24ecd35 |
+|                    |           |             | schwab-testsub           | 6033edd2bf756403406a5032 |
+|                    |           |             | intuit                   | 5b6c60d4e0fa4705fe069ea0 |
+|                    |           |             | viivhealthcare, gsk      | 5be07dcd648de4a5cd2cefd8 |
+|                    |           |             | cardinalhealth           | 5d03f3b43f113182b98863d1 |
+|                    |           |             | heapanalytics            | 5df9308525d84d1a5657db5c |
 
 
 
@@ -137,7 +138,10 @@ This is a complete layout of all the Mongo Clusters, their corresponding Postgre
    - Sign in to AWS with the `RAM-AWS-StratifydPostgres-Admin` role.
    - Navigate to S3 and select the bucket `archived-clients-db-data`.
    - Create a folder named `Client-<client-name>`, for example, `Client-prudential`.
-   - Upload the `.gz` file to this folder.
+   - Upload the `.gz` file to this folder directly. If the upload fails you can use this command from AWS CLI:
+     ```bash
+     aws s3 cp path_to_file\<subdomain-id>.gz s3://archived-clients-db-data/Client-<subdomain-name>/
+     ```
 
    - Note: The S3 bucket is already configured with Glacier storage, so no additional actions are required.
 
@@ -306,8 +310,14 @@ Then go to mongo cluster, in the app database and in the deleted sub collection 
     - Dropped postgres database: deleted_db_5bad2ed7f55cabb466547a38
     - Dropped mongo database 5bad2ed7f55cabb466547a38
       
-Verify further by going to postgres database list and there should be no db_<subdomain-ID> or deleted_db_<subdomain-ID> present. Then go to the Mongo Cluster and there should be do database named <subdomain-ID>.
+Verify further by going to postgres database list in the session manager and there should be no db_<subdomain-ID> or deleted_db_<subdomain-ID> present. Then go to the Mongo Cluster and there should be do database named <subdomain-ID>.
 This means everything has been hard deleted successfully.
 
 ## Conclusion
-Summarize the process and any final notes.
+By following this runbook, you will achieve the following objectives:
+
+   1. **Data Migration:** Client data currently stored in Amazon S3 will be moved to Amazon Glacier, significantly reducing storage costs while ensuring data integrity and availability for long-term retention.
+   2. **Database Archiving:** Data from MongoDB and PostgreSQL databases will be systematically exported, compressed, and uploaded to Amazon Glacier. This process guarantees that all necessary data is archived securely and efficiently.
+   3. **Data Deletion:** Once the data has been successfully archived, the original data will be safely deleted from the production clusters. This step is crucial to free up resources and maintain the efficiency of the production environment.
+
+Using this runbook ensures a comprehensive and secure approach to data archiving, aligning with best practices for data management and compliance. It enables a streamlined process to handle old client data, providing a robust solution for long-term data storage and retrieval needs.
