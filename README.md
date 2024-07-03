@@ -24,7 +24,7 @@ Before starting the archiving process, ensure you have the following:
 2. **Database Access**:
    - Obtain `mongo_uri` and `postgre_uri` for connecting to MongoDB and PostgreSQL databases, respectively.
    - OpenVPN connection for secure access to MongoDB data.
-   - Access to MongoDB Atlas to create a user with `dropDatabase` permission.
+   - Access to MongoDB Atlas to create a user with `dropDatabase` permission. Particularly `Project Owner` role in Project Access Manager for STRATIFYD INC > AWS.
 
 Ensure these prerequisites are in place for a smooth execution of the archiving tasks.
 
@@ -117,31 +117,39 @@ This is a complete layout of all the Mongo Clusters, their corresponding Postgre
 ## Archiving MongoDB Data
 
 1. **Identify MongoDB URI**:
-   - Locate the mongo cluster and production stack of the client to obtain the Mongo URI from the ECS of the stack in AWS as role `RAM-AWS-StratifydTasteAnalytics-Admin`. You can use the table above.
-   - If you can not found it, access the Mongo URIs of all stacks using either 'mongosh' or 'mongo compass' (Connect to OpenVPN) and navigate to the `apps` database in all of them.
+   - Identify the mongo cluster and production stack for the client to obtain the Mongo URI of the stack in AWS as role `RAM-AWS-StratifydTasteAnalytics-Admin`. You can use the table above.
+   - In a rare situation, If you can not found it, access the Mongo URIs of all stacks using either 'mongosh' or 'mongo compass' (Connect to OpenVPN) and navigate to the `apps` database in all of them.
    - In the `apps` database, search the collection named `sub` and look for the client name in it.
    - Once located, note the Object ID of the document, which serves as the subdomain ID of the client.
 
 2. **Check Database Presence**:
    - Within the same Mongo cluster, verify that a database exists with the name matching the client's subdomain ID.
 
-3. **Download Data**:
-   - If the database is present, use the following command to download and compress the data:
+1. **Sign in to AWS**
+   - Use the `RAM-AWS-StratifydPostgres-Admin` role.
 
+2. **Connect to EC2 Instance**
+   - Navigate to **EC2** in the AWS Management Console.
+   - Connect to the instance named `Mongo-backup-instance` using the **Session Manager**.
+
+3. **Execute MongoDB Data Backup Command**
+   - Use the following command, replacing `<mongo_uri>`, `<client-name>`, and `<subdomain-id>` with the appropriate values:
      ```bash
-     mongodump --uri "<mongo_uri>" --db "<sub-domain ID>" --archive=path_in_local_machine\<sub-domain-ID>.gz --gzip
+     sudo nohup sh -c 'mongodump --uri "<mongo_uri>" --db "<subdomain-id>" --archive --gzip | aws s3 cp - s3://archived-clients-db-data/Client-<client-name>/<subdomain-id>.gz' > /tmp/nohup.out 2>&1 &
+     ```
+     This command would run in the background even if you terminate the session manager.
+
+4. **Check Logs**
+   - Use this command to check the logs to ensure the process completes successfully:
+     ```bash
+     tail -f /tmp/nohup.out
      ```
 
-   - This command will download the database as a compressed file named `<sub-domain-ID>.gz` to the path in your local machine you specified.
-
-4. **Upload to S3**:
+5. **Verify Backup in S3**
    - Sign in to AWS with the `RAM-AWS-StratifydPostgres-Admin` role.
-   - Navigate to S3 and select the bucket `archived-clients-db-data`.
-   - Create a folder named `Client-<client-name>`, for example, `Client-prudential`.
-   - Upload the `.gz` file to this folder directly. If the upload fails you can use this command from AWS CLI:
-     ```bash
-     aws s3 cp path_to_file\<subdomain-id>.gz s3://archived-clients-db-data/Client-<subdomain-name>/
-     ```
+   - Navigate to **S3** in the AWS Management Console.
+   - In the `archived-clients-db-data` bucket, you should see an object named `Client-<client-name>`. Inside this object, there should be a file named `<subdomain-id>.gz`.
+   - If the file is present then the mongo data for that client has been saved successfully.
 
    - Note: The S3 bucket is already configured with Glacier storage, so no additional actions are required.
 
@@ -212,6 +220,14 @@ This is a complete layout of all the Mongo Clusters, their corresponding Postgre
      
 
 ## Deleting Mongo and Postgres Data
+First sign in to Mongo Atlas. Goto STRATIFYD INC > AWS and Database Access. Then go to custom role, add new custom role, name it `drop_<client-name>_prod_database`, in Action or Role select 
+dropDatabase, renameCollectionSameDB and in database write the subdomain-id(as shown in picture)
+![image](https://github.com/aliibtehajasifniazi/test/assets/171139951/beab86c6-b382-4605-9d9c-890ac12f4dd2)
+Then add another action or role and select readWrite and in database write app (as shown in picture below):
+![image](https://github.com/aliibtehajasifniazi/test/assets/171139951/d1ff0e62-0b03-471f-a4ec-ec4b9335f82d)
+Then go to `Database Users` and add new database user. Give it a username, password, custom roles select the one you created and finally make it a temporary user for 6 hours.
+Now sign in to AWS as role `RAM-AWS-StratifydTasteAnalytics-Admin` go to AWS Secrets Manager search for prod/<stack>/mongo-uri. Edit the secret value and add the key value pair:
+`<client-name>-drop-database` and the mongo uri same as the original one but change the username and password with the new usename and password you made in Atlas.
 
 ### Creating a Job Definition
 
@@ -243,7 +259,7 @@ This is a complete layout of all the Mongo Clusters, their corresponding Postgre
    - **Memory:** 256
 
 6. Add Secrets:
-   - `MONGO_URI`: `:mongo_uri_drop_database::`
+   - `MONGO_URI`: `:<client-name>-drop-database::` (the one you made earlier from Mongo Atlas)
    - `POSTGRES_URI`: `:postgres_uri::`
 
 7. Add Environment Variables:
